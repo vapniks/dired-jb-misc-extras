@@ -26,21 +26,21 @@
 
  Below is a complete command list:
 
- - `dired-get-size'
+ - `dired-get-size' :
     Get total size of marked files using linux du command. This only works on local directories.
- - `dired-up-dir'
+ - `dired-up-dir' :
     In dired go up a directory and replace current buffer, instead of creating a new one.
- - `dired-do-shell-command-regexp'
+ - `dired-do-shell-command-regexp' :
     Create and run shell commands from selected filenames which match REGEXP.
- - `dired-find-file-other-window'
+ - `dired-find-file-other-window' :
     Wrapper around dired-find-file-other-window.
- - `image-dired-show-all-tags'
+ - `image-dired-show-all-tags' :
     Show all tags that have been used to tag files.
- - `image-dired-display-thumbnail-original-image-fullsize'
+ - `image-dired-display-thumbnail-original-image-fullsize' :
     Display current thumbnail's original fullsize image in display buffer.
- - `image-dired-rename-original'
+ - `image-dired-rename-original' :
     Rename original file corresponding to current thumbnail.
- - `image-dired-copy-original'
+ - `image-dired-copy-original' :
     Copy original file corresponding to current thumbnail.
 
  The following existing commands are advised:
