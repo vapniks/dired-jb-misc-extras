@@ -91,6 +91,7 @@
 ;;; Require
 (eval-when-compile (require 'cl))
 
+;;;###autoload
 (defun dired-get-size nil
   "Get total size of marked files using linux du command.
         This only works on local directories."
@@ -103,12 +104,14 @@
 		 (re-search-backward "\\(^[0-9.,]+.+\\).*total$")
 		 (match-string 1))))))
 
+;;;###autoload
 (defun dired-up-dir nil
   "In dired go up a directory and replace current buffer,
   instead of creating a new one."
   (interactive)
   (find-alternate-file ".."))
 
+;;;###autoload
 (defun dired-do-shell-command-regexp (regexp newname &optional arg whole-name)
   "Create and run shell commands from selected filenames which match REGEXP.
   Shell command is created from prompted string, replacing \\=\\<n> or \\& as in `query-replace-regexp'.
@@ -155,6 +158,7 @@
 	  (dired-log "Shell command \"%s\" not executed\n" command))))
     (message "Shell commands completed")))
 
+;;;###autoload
 (defun dired-find-file-other-window (move)
   "Wrapper around dired-find-file-other-window.
   If called with a prefix arg then usual behaviour of moving point to window containing newly opened file will be performed.
@@ -196,6 +200,7 @@
 	      (run-associated-program file)))
 	ad-do-it)))
 
+;;;###autoload
 (defun image-dired-show-all-tags nil
   "Show all tags that have been used to tag files."
   (interactive)
@@ -215,6 +220,7 @@
 	    tags (remove "comment" tags))
       (message "Tags: %s" (mapconcat 'identity tags " ")))))
 
+;;;###autoload
 (defun image-dired-display-thumbnail-original-image-fullsize nil
   "Display current thumbnail's original fullsize image in display buffer."
   (interactive)
@@ -223,6 +229,7 @@
 	 (image-dired-display-current-image-full)
 	 (other-window 1)))
 
+;;;###autoload
 (defun image-dired-rename-original nil
   "Rename original file corresponding to current thumbnail."
   (interactive)
@@ -236,6 +243,7 @@
     (other-window 1)
     (image-dired-delete-char)))
 
+;;;###autoload
 (defun image-dired-copy-original nil
   "Copy original file corresponding to current thumbnail."
   (interactive)
