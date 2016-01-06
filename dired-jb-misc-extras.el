@@ -106,8 +106,7 @@
 
 ;;;###autoload
 (defun dired-up-dir nil
-  "In dired go up a directory and replace current buffer,
-  instead of creating a new one."
+  "In dired go up a directory and replace current buffer, instead of creating a new one."
   (interactive)
   (find-alternate-file ".."))
 
@@ -115,22 +114,22 @@
 (defun dired-do-shell-command-regexp (regexp newname &optional arg whole-name)
   "Create and run shell commands from selected filenames which match REGEXP.
 Shell command is created from prompted string, replacing \\=\\<n> or \\& as in `query-replace-regexp'.
-  REGEXP defaults to the last regexp used.
-  Output of shell commands (along with commands executed) will be displayed in `*Dired regexp shell commands output*'
-  which will pop-up underneath the dired buffer.
+REGEXP defaults to the last regexp used.
+Output of shell commands (along with commands executed) will be displayed in `*Dired regexp shell commands output*'
+which will pop-up underneath the dired buffer.
 
-  With non-zero prefix argument ARG, the command operates on the next ARG
-  files.  Otherwise, it operates on all the marked files, or the current
-  file if none are marked.
+With non-zero prefix argument ARG, the command operates on the next ARG
+files.  Otherwise, it operates on all the marked files, or the current
+file if none are marked.
 
-  As each match is found, the user must type a character saying
-    what to do with it.  For directions, type \\[help-command] at that time.
+As each match is found, the user must type a character saying
+  what to do with it.  For directions, type \\[help-command] at that time.
 
-  With a zero prefix arg, the regexp matches the absolute file name.
-  Normally, only the non-directory part of the file name is used.
+With a zero prefix arg, the regexp matches the absolute file name.
+Normally, only the non-directory part of the file name is used.
 
-  Note: before running the shell command, it will cd into the directory containing the file,
-        and this cd command will be displayed in the confirmation prompt."
+Note: before running the shell command, it will cd into the directory containing the file,
+      and this cd command will be displayed in the confirmation prompt."
   (interactive (dired-mark-read-regexp "Regexp shell command: "))
   (let* ((fn-list (dired-get-marked-files nil arg))
 	 (operation-prompt "Do shell command: `%s'    ?")
