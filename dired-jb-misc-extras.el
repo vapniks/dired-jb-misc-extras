@@ -114,9 +114,9 @@
 ;;;###autoload
 (defun dired-do-shell-command-regexp (regexp newname &optional arg whole-name)
   "Create and run shell commands from selected filenames which match REGEXP.
-  Shell command is created from prompted string, replacing \\=\\<n> or \\& as in `query-replace-regexp'.
+Shell command is created from prompted string, replacing \\=\\<n> or \\& as in `query-replace-regexp'.
   REGEXP defaults to the last regexp used.
-  Output of shell commands (along with commands executed) will be displayed in `Dired regexp shell commands output*'
+  Output of shell commands (along with commands executed) will be displayed in `*Dired regexp shell commands output*'
   which will pop-up underneath the dired buffer.
 
   With non-zero prefix argument ARG, the command operates on the next ARG
@@ -137,25 +137,26 @@
 	 (help-form "
   Type SPC or `y' to do shell command on this match, DEL or `n' to skip to next,
   `!' to do shell command on all remaining matches with no more questions.")
-	 rename-regexp-query command dir)
+	 rename-regexp-query cdcmd maincmd cmd dir)
     (save-excursion
       (display-buffer (get-buffer-create "*Dired regexp shell commands output*"))
       (with-current-buffer "*Dired regexp shell commands output*"
 	(goto-char (point-max))
 	(insert "\n"))
       (dolist (from fn-list)
-	(setq command (concat "cd " (file-name-directory from) ";"
-			      (if whole-name
-				  (dired-string-replace-match regexp from newname)
-				(dired-string-replace-match regexp (file-name-nondirectory from) newname))))
-	(if (dired-query 'rename-regexp-query operation-prompt command)
-	    (progn (shell-command command)
+	(setq cdcmd (concat "cd " (file-name-directory from))
+	      maincmd (if whole-name
+			  (dired-string-replace-match regexp from newname)
+			(dired-string-replace-match regexp (file-name-nondirectory from) newname))
+	      cmd (concat cdcmd ";" maincmd))
+	(if (dired-query 'rename-regexp-query operation-prompt (concat maincmd "\n"))
+	    (progn (shell-command cmd)
 		   (with-current-buffer "*Dired regexp shell commands output*"
 		     (goto-char (point-max))
-		     (insert "> " command "\n"))
+		     (insert "> " cmd "\n"))
 		   (with-current-buffer "*Shell Command Output*"
 		     (append-to-buffer "*Dired regexp shell commands output*" (point-min) (point-max))))
-	  (dired-log "Shell command \"%s\" not executed\n" command))))
+	  (dired-log "Shell command \"%s\" not executed\n" cmd))))
     (message "Shell commands completed")))
 
 ;;;###autoload
