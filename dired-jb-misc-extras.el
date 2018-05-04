@@ -92,17 +92,55 @@
 (eval-when-compile (require 'cl))
 
 ;;;###autoload
-(defun dired-get-size nil
-  "Get total size of marked files using linux du command.
-        This only works on local directories."
-  (interactive)
-  (let ((files (dired-get-marked-files)))
+(defun dired-get-size (&optional files bytesp)
+  "Get total size of FILES (a list of filepaths) using linux du command.
+When called interactively print the size of the marked files in
+the message area.
+If BYTESP is non-nil, or if called with a prefix arg return total
+bytes, otherwise return in human readable form (e.g. 1K, 234M, 2G).
+This only works on local directories."
+  (interactive (list (dired-get-marked-files) current-prefix-arg))
+  (let (num)
     (with-temp-buffer
-      (apply 'call-process "/usr/bin/du" nil t nil "-sch" files)
-      (message "Size of all marked files: %s"
-	       (progn
-		 (re-search-backward "\\(^[0-9.,]+.+\\).*total$")
-		 (match-string 1))))))
+      (apply 'call-process "/usr/bin/du" nil t nil
+	     (concat "-sc" (if bytesp "b" "h")) files)
+      (setq num (progn (re-search-backward "\\(^[0-9.,]+.+\\).*total$")
+		       (match-string 1)))
+      (if (called-interactively-p 'any)
+	  (message "Size of all marked files: %s" num)))
+    num))
+
+(defun dired-mark-until-size (size &optional movep)
+  "Mark files & dirs from point onwards until their total size is >= SIZE, or there are no more.
+If MOVEP is non-nil, or if called with a prefix argument, then move marker to the
+end of the marked files, otherwise dont move it.
+Return the total byte count of the marked files."
+  (interactive (list (read-string "Size of files: ")
+		     current-prefix-arg))
+  (let* ((case-fold-search t)
+	 (totalbytes (if (numberp size)
+			 size
+		       (* (string-to-number size)
+			  (cond ((string-match "k" size) 1024)
+				((string-match "m" size) 1048576)
+				((string-match "g" size) 1073741824)
+				(t 1)))))
+	 (accum 0)
+	 (count 0)
+	 filename)
+    (while (and (< accum totalbytes)
+		(setq filename (ignore-errors (dired-filename-at-point))))
+      (setq count (1+ count)
+	    accum (+ accum
+		     (string-to-number
+		      (dired-get-size (list filename) t))))
+      (dired-next-line 1))
+    (let ((start (point)))
+      (dired-mark (- count))
+      (if movep (goto-char start)))
+    (if (called-interactively-p 'any)
+	(message "Total size of marked files = %s bytes" accum))
+    accum))
 
 ;;;###autoload
 (defun dired-up-dir nil
