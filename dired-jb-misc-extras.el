@@ -111,8 +111,9 @@ This only works on local directories."
     num))
 
 (cl-defun dired-convert-bytes (bytes &optional (precision 2))
-  "Convert an integer number of BYTES to human readable string.
-For example (dired-convert-bytes 2040) returns \"2K\"."
+  "Convert an integer number of BYTES to a human readable string.
+Use PRECISION decimal places (default 2).
+For example (dired-convert-bytes 10000 2) returns \"9.77KB\"."
   (if (< bytes 0) (error "Cant convert negative bytes arg"))
   (cond ((> (lsh bytes -30) 0)
 	 (concat (format (concat "%." (number-to-string precision) "f")
