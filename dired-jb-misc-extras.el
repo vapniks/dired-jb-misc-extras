@@ -110,6 +110,20 @@ This only works on local directories."
 	  (message "Size of all marked files: %s" num)))
     num))
 
+(cl-defun dired-convert-bytes (bytes &optional (precision 2))
+  "Convert an integer number of BYTES to human readable string.
+For example (dired-convert-bytes 2040) returns \"2K\"."
+  (if (< bytes 0) (error "Cant convert negative bytes arg"))
+  (cond ((> (lsh bytes -30) 0)
+	 (concat (format (concat "%." (number-to-string precision) "f")
+			 (/ bytes 1073741824.0)) "GB"))
+	((> (lsh bytes -20) 0)
+	 (concat (format (concat "%." (number-to-string precision) "f")
+			 (/ bytes 1048576.0)) "MB"))
+	((> (lsh bytes -10) 0)
+	 (concat (format (concat "%." (number-to-string precision) "f")
+			 (/ bytes 1024.0)) "KB"))))
+
 (defun dired-mark-until-size (size &optional movep)
   "Mark files & dirs from point onwards until their total size is >= SIZE, or there are no more.
 If MOVEP is non-nil, or if called with a prefix argument, then move marker to the
@@ -139,7 +153,8 @@ Return the total byte count of the marked files."
       (dired-mark (- count))
       (if movep (goto-char start)))
     (if (called-interactively-p 'any)
-	(message "Total size of marked files = %s bytes" accum))
+	(message "Total size of marked files = %s = %s bytes"
+		 (dired-convert-bytes accum) accum))
     accum))
 
 ;;;###autoload
