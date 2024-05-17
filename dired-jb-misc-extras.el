@@ -350,12 +350,23 @@ If a prefix key is used then other args DIR, NAMEFILTER, PREFIX & SUFFIX will be
 			 (read-from-minibuffer "Function (default 'file-name-nondirectory): "
 					       nil nil t nil "file-name-nondirectory")
 		       'file-name-nondirectory)
-		     (if current-prefix-arg
-			 (read-from-minibuffer "Prefix string: ")
-		       "")
-		     (if current-prefix-arg
-			 (read-from-minibuffer "Suffix string: ")
-		       "")))
+		     (cl-case current-prefix-arg
+		       ('nil "")
+		       (1 "| ")
+		       (2 " - ")
+		       (t (read-from-minibuffer "Prefix string: ")))
+		     ;; (if current-prefix-arg
+		     ;; 	 (read-from-minibuffer "Prefix string: ")
+		     ;;   "")
+		     (cl-case current-prefix-arg
+		       ('nil "")
+		       (1 " |\n")
+		       (2 " \n")
+		       (t (read-from-minibuffer "Suffix string: ")))
+		     ;; (if current-prefix-arg
+		     ;; 	 (read-from-minibuffer "Suffix string: ")
+		     ;;   "")
+		     ))
   (let* ((filepaths (or (dired-get-subdir)
 			(dired-get-marked-files)))
 	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix))
@@ -385,6 +396,7 @@ Args are the same as for `file-name-as-hyperlink'."
 	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix)))
     (setq killed-rectangle links)))
 
+;;;###autoload
 (defcustom find-dired-presets
   '(("images"
      "-iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.bmp' -o -iname '*.svg' -o -iname '*.tiff' -o -iname '*.gif' -o -iname '*.eps' -o -iname '*.webp' -o -iname '*.xcf' -o -iname '*.heif'")
@@ -435,9 +447,10 @@ find arguments before running `find-dired'."
     (if edit (setq argstr (read-string "Find args: " argstr)))
     (find-dired dir argstr)))
 
-;; On my keyboard these keys are obtained by pressing AltGr+l/L, but you may want to use different keys.
-(define-key dired-mode-map (kbd "Ł") 'dired-copy-orglink-to-rectangle)
-(define-key dired-mode-map (kbd "ł") 'dired-copy-orglink-as-kill)
+(when (boundp 'menu-bar-run-find-menu)
+  (easy-menu-add-item menu-bar-run-find-menu nil
+		      ["Find Files Using Preset..." find-dired-preset]
+		      "`find' <anything>..."))
 
 (when (boundp 'diredp-multiple-recursive-menu)
   (easy-menu-add-item diredp-multiple-recursive-menu nil
