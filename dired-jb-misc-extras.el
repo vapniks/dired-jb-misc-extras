@@ -65,6 +65,10 @@
 ;;    Rename original file corresponding to current thumbnail.
 ;;  `image-dired-copy-original'
 ;;    Copy original file corresponding to current thumbnail.
+;;  `dired-copy-orglink-as-kill'
+;;    Copy marked files in dired buffer to the ‘kill-ring’ as a list of org hyperlinks.
+;;  `dired-copy-orglink-to-rectangle'
+;;    Copy marked files in dired buffer to a rectangle (which can be yanked with ‘yank-rectangle’).
 ;;
 ;; The following existing commands are advised:
 ;;
