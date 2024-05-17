@@ -310,6 +310,89 @@ Note: before running the shell command, it will cd into the directory containing
     (other-window 1)
     (image-dired-delete-char)))
 
+;;;###autoload
+(cl-defun file-name-as-orglink (filepaths &optional dir (namefilter 'file-name-nondirectory)
+					  prefix suffix)
+  "Convert FILEPATHS to org hyperlink strings. FILEPATHS can be a single filepath or a list of them.
+By default links will contain absolute filepaths, but if DIR is supplied, then links will
+be relative to that directory.
+The names of the links are created by passing the filepaths through the function supplied 
+by NAMEFILTER which is `file-name-nondirectory' by default. 
+Optional args PREFIX & SUFFIX are strings to prepend & append to the links, and will not 
+become part of the link themselves, by default they are empty strings. 
+Alternatively PREFIX & SUFFIX may also be functions used to generate prefix & suffix strings
+from the filepath of each link (passed as an argument)."
+  (let* ((paths (mapcar (if dir (lambda (x) (file-relative-name x dir)) 'identity)
+			(if (stringp filepaths) (list filepaths) filepaths))))
+    (mapcar (lambda (path) (concat (if (functionp prefix)
+				       (funcall prefix path)
+				     prefix)
+				   "[[file:" path "]["
+				   (funcall namefilter path)
+				   "]]"
+				   (if (functionp suffix)
+				       (funcall suffix path)
+				     suffix)))
+	    paths)))
+
+;;;###autoload
+(cl-defun dired-copy-orglink-as-kill (dir namefilter prefix suffix)
+  "Copy marked files in dired buffer to the `kill-ring' as a list of org hyperlinks.
+Args DIR, NAMEFILTER, PREFIX & SUFFIX are the same as for `file-name-as-hyperlink'.
+If a prefix key is used then other args DIR, NAMEFILTER, PREFIX & SUFFIX will be prompted for."  
+  (interactive (list (if current-prefix-arg
+			 (read-directory-name "Make links relative to dir: "))
+		     (if current-prefix-arg
+			 (read-from-minibuffer "Function (default 'file-name-nondirectory): "
+					       nil nil t nil "file-name-nondirectory")
+		       'file-name-nondirectory)
+		     (if current-prefix-arg
+			 (read-from-minibuffer "Prefix string: ")
+		       "")
+		     (if current-prefix-arg
+			 (read-from-minibuffer "Suffix string: ")
+		       "")))
+  (let* ((filepaths (or (dired-get-subdir)
+			(dired-get-marked-files)))
+	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix))
+	 (linkstring (mapconcat 'identity links " ")))
+    (if (eq last-command 'kill-region)
+	(kill-append linkstring nil)
+      (kill-new linkstring))))
+
+;;;###autoload
+(cl-defun dired-copy-orglink-to-rectangle (dir namefilter prefix suffix)
+  "Copy marked files in dired buffer to a rectangle (which can be yanked with `yank-rectangle').
+Args are the same as for `file-name-as-hyperlink'."
+  (interactive (list (if current-prefix-arg
+			 (read-directory-name "Make links relative to dir: "))
+		     (if current-prefix-arg
+			 (read-from-minibuffer "Function (default 'file-name-nondirectory): "
+					       nil nil t nil "file-name-nondirectory")
+		       'file-name-nondirectory)
+		     (if current-prefix-arg
+			 (read-from-minibuffer "Prefix string: ")
+		       "")
+		     (if current-prefix-arg
+			 (read-from-minibuffer "Suffix string: ")
+		       "")))
+  (let* ((filepaths (or (dired-get-subdir)
+			(dired-get-marked-files)))
+	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix)))
+    (setq killed-rectangle links)))
+
+;; On my keyboard these keys are obtained by pressing AltGr+l/L, but you may want to use different keys.
+(define-key dired-mode-map (kbd "Ł") 'dired-copy-orglink-to-rectangle)
+(define-key dired-mode-map (kbd "ł") 'dired-copy-orglink-as-kill)
+
+(when (boundp 'diredp-multiple-recursive-menu)
+  (easy-menu-add-item diredp-multiple-recursive-menu nil
+		      ["Copy File Names As Orglinks To Rectangle" dired-copy-orglink-to-rectangle t]
+		      "Copy File Names (to paste)")
+  (easy-menu-add-item diredp-multiple-recursive-menu nil
+		      ["Copy File Names As Orglinks (to paste)" dired-copy-orglink-as-kill t]
+		      "Copy File Names (to paste)"))
+
 (provide 'dired-jb-misc-extras)
 
 ;; (magit-push)
