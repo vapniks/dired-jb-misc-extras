@@ -385,6 +385,56 @@ Args are the same as for `file-name-as-hyperlink'."
 	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix)))
     (setq killed-rectangle links)))
 
+(defcustom find-dired-arg-sets
+  '(("images"
+     "-iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.bmp' -o -iname '*.svg' -o -iname '*.tiff' -o -iname '*.gif' -o -iname '*.eps' -o -iname '*.webp' -o -iname '*.xcf' -o -iname '*.heif'")
+    ("documents"
+     "-iname '*.pdf' -o -iname '*.docx' -o -iname '*.doc' -o -iname '*.txt' -o -iname '*.ppt' -o -iname '*.pptx' -o -iname '*.rtf' -o -iname '*.tex' -o -iname '*.odt' -o -iname '*.html' -o -iname '*.htm'")
+    ("files containing regexp"
+     "-type f -a -exec grep -q '%1' {} \\\; " (lambda nil (read-regexp "grep regexp: "))))
+  "Named sets of arguments for the find command when `find-dired-by-type' is called.
+
+Each element of this list is in the form (NAME ARGS PROMPT/FUNCTION...)
+NAME is a name that the user can select when `find-dired-by-type' is executed.
+ARGS is a string of arguments for find which may contain placeholders %1, %2, etc.
+and should not contain the initial search directory, or the final \"-exec ls -ld {} \;\"
+The PROMPT/FUNCTION elements correspond with the placeholders, and define what to replace each
+placeholder with; either a string prompted from the user, or the return value of a FUNCTION."
+  :type '(repeat
+	  (list :tag "Named args"
+		(string :tag "Name" :help-echo "Name for this set of args")
+		(string :tag "find args"
+			:help-echo "Arguments for find command excluding directory")
+		(repeat :inline t
+			(choice (string :tag "Prompt")
+				(function :tag "Function"
+					  :help-echo
+					  "Function must return a string to replace placeholder in args")))))
+  :group 'find-dired)
+
+;;;###autoload
+(defun find-dired-by-type (dir name &optional edit)
+  "Find files in DIR using NAME args from `find-dired-arg-sets'.
+If optional argument EDIT is non-nil then prompt the user to edit the
+find arguments before running `find-dired'."
+  (interactive (list (read-directory-name "Dir: " nil nil t)
+		     (completing-read "File types: "
+				      (mapcar 'car find-dired-arg-sets))
+		     current-prefix-arg))
+  (let* ((args (assoc name find-dired-arg-sets))
+	 (argstr (cadr args))
+	 (replacements (cddr args)))
+    (cl-loop for repl in replacements
+	     for i from 1
+	     do (setq argstr
+		      (string-replace (concat "%" (number-to-string i))
+				      (if (stringp repl)
+					  (read-string repl)
+					(funcall repl))
+				      argstr)))
+    (if edit (setq argstr (read-string "Find args: " argstr)))
+    (find-dired dir argstr)))
+
 ;; On my keyboard these keys are obtained by pressing AltGr+l/L, but you may want to use different keys.
 (define-key dired-mode-map (kbd "Ł") 'dired-copy-orglink-to-rectangle)
 (define-key dired-mode-map (kbd "ł") 'dired-copy-orglink-as-kill)
