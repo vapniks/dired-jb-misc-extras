@@ -340,7 +340,7 @@ from the filepath of each link (passed as an argument)."
 	    paths)))
 
 ;;;###autoload
-(cl-defun dired-copy-orglink-as-kill (dir namefilter prefix suffix)
+(defun dired-copy-orglink-as-kill (dir namefilter prefix suffix)
   "Copy marked files in dired buffer to the `kill-ring' as a list of org hyperlinks.
 Args DIR, NAMEFILTER, PREFIX & SUFFIX are the same as for `file-name-as-hyperlink'.
 If a prefix key is used then other args DIR, NAMEFILTER, PREFIX & SUFFIX will be prompted for."  
@@ -365,7 +365,7 @@ If a prefix key is used then other args DIR, NAMEFILTER, PREFIX & SUFFIX will be
       (kill-new linkstring))))
 
 ;;;###autoload
-(cl-defun dired-copy-orglink-to-rectangle (dir namefilter prefix suffix)
+(defun dired-copy-orglink-to-rectangle (dir namefilter prefix suffix)
   "Copy marked files in dired buffer to a rectangle (which can be yanked with `yank-rectangle').
 Args are the same as for `file-name-as-hyperlink'."
   (interactive (list (if current-prefix-arg
