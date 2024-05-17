@@ -385,17 +385,17 @@ Args are the same as for `file-name-as-hyperlink'."
 	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix)))
     (setq killed-rectangle links)))
 
-(defcustom find-dired-arg-sets
+(defcustom find-dired-presets
   '(("images"
      "-iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.bmp' -o -iname '*.svg' -o -iname '*.tiff' -o -iname '*.gif' -o -iname '*.eps' -o -iname '*.webp' -o -iname '*.xcf' -o -iname '*.heif'")
     ("documents"
      "-iname '*.pdf' -o -iname '*.docx' -o -iname '*.doc' -o -iname '*.txt' -o -iname '*.ppt' -o -iname '*.pptx' -o -iname '*.rtf' -o -iname '*.tex' -o -iname '*.odt' -o -iname '*.html' -o -iname '*.htm'")
     ("files containing regexp"
      "-type f -a -exec grep -q '%1' {} \\\; " (lambda nil (read-regexp "grep regexp: "))))
-  "Named sets of arguments for the find command when `find-dired-by-type' is called.
+  "Named sets of arguments for the find command when `find-dired-preset' is called.
 
 Each element of this list is in the form (NAME ARGS PROMPT/FUNCTION...)
-NAME is a name that the user can select when `find-dired-by-type' is executed.
+NAME is a name that the user can select when `find-dired-preset' is executed.
 ARGS is a string of arguments for find which may contain placeholders %1, %2, etc.
 and should not contain the initial search directory, or the final \"-exec ls -ld {} \;\"
 The PROMPT/FUNCTION elements correspond with the placeholders, and define what to replace each
@@ -413,8 +413,8 @@ placeholder with; either a string prompted from the user, or the return value of
   :group 'find-dired)
 
 ;;;###autoload
-(defun find-dired-by-type (dir name &optional edit)
-  "Find files in DIR using NAME args from `find-dired-arg-sets'.
+(defun find-dired-preset (dir name &optional edit)
+  "Find files in DIR using NAME args from `find-dired-presets'.
 If optional argument EDIT is non-nil then prompt the user to edit the
 find arguments before running `find-dired'."
   (interactive (list (read-directory-name "Dir: " nil nil t)
