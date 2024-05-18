@@ -412,10 +412,12 @@ The rectangle can be yanked with `yank-rectangle'."
 
 ;;;###autoload
 (defcustom find-dired-presets
-  '(("images"
-     "-iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.bmp' -o -iname '*.svg' -o -iname '*.tiff' -o -iname '*.gif' -o -iname '*.eps' -o -iname '*.webp' -o -iname '*.xcf' -o -iname '*.heif'")
-    ("documents"
-     "-iname '*.pdf' -o -iname '*.docx' -o -iname '*.doc' -o -iname '*.txt' -o -iname '*.ppt' -o -iname '*.pptx' -o -iname '*.rtf' -o -iname '*.tex' -o -iname '*.odt' -o -iname '*.html' -o -iname '*.htm'")
+  '(("images" "-iregex '.*\\.\\(avif\\|bmp\\|eps\\|gif\\|heif\\|jpeg\\|jpg\\|png\\|svg\\|tiff\\|webp\\|xcf\\)$'")
+    ("documents" "-iregex '.*\\.\\(docx\\|doc\\|htm\\|html\\|odt\\|org\\|pdf\\|ppt\\|pptx\\|rtf\\|tex\\|txt\\)$'")
+    ("data"
+     "-iregex '.*\\.\\(cdf\\|csv\\|dat\\|dkvp\\|h5\\|hdf5\\|json\\|mat\\|nc\\|Rdata\\|rds\\|sdxf\\|sqlite\\|tsv\\|xls\\|xlsx\\|xml\\)$'")
+    ("code"
+     "-iregex '.*\\.\\(ada\\|asm\\|awk\\|c\\|cl\\|clj\\|cljs\\|cpp\\|cs\\|do\\|el\\|exp\\|fasl\\|gawk\\|go\\|h\\|hpp\\|hs\\|java\\|js\\|k\\|l\\|lisp\\|lsp\\|lua\\|m\\|mlr\\|mod\\|php\\|pl\\|prg\\|py\\|r\\|rb\\|rs\\|scala\\|scm\\|sed\\|sh\\|sql\\|swift\\|tcl\\|txr\\|v\\|zsh\\)$'")
     ("files containing regexp"
      "-type f -a -exec grep -q '%1' {} \\\; " (lambda nil (read-regexp "grep regexp: "))))
   "Named sets of arguments for the find command when `find-dired-preset' is called.
@@ -445,9 +447,9 @@ If optional argument EDIT is non-nil then prompt the user to edit the
 find arguments before running `find-dired'."
   (interactive (list (read-directory-name "Dir: " nil nil t)
 		     (completing-read "File types: "
-				      (mapcar 'car find-dired-arg-sets))
+				      (mapcar 'car find-dired-presets))
 		     current-prefix-arg))
-  (let* ((args (assoc name find-dired-arg-sets))
+  (let* ((args (assoc name find-dired-presets))
 	 (argstr (cadr args))
 	 (replacements (cddr args)))
     (cl-loop for repl in replacements
