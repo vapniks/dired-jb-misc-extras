@@ -425,7 +425,7 @@ The rectangle can be yanked with `yank-rectangle'."
   '(("images" "-type f -iregex '.*\\.\\(avif\\|bmp\\|eps\\|gif\\|heif\\|jpeg\\|jpg\\|png\\|svg\\|tiff\\|webp\\|xcf\\)$'")
     ("documents" "-type f -iregex '.*\\.\\(docx\\|doc\\|htm\\|html\\|odt\\|org\\|pdf\\|ppt\\|pptx\\|rtf\\|tex\\|txt\\)$'")
     ("data"
-     "-type f -iregex '.*\\.\\(cdf\\|csv\\|dat\\|dkvp\\|h5\\|hdf5\\|json\\|mat\\|nc\\|Rdata\\|rds\\|sdxf\\|sqlite\\|tsv\\|xls\\|xlsx\\|xml\\)$'")
+     "-type f -iregex '.*\\.\\(cdf\\|csv\\|dat\\|dkvp\\|h5\\|hdf5\\|json\\|mat\\|nc\\|Rdata\\|rds\\|sav\\|sdxf\\|sqlite\\|tsv\\|xls\\|xlsx\\|xml\\)$'")
     ("code"
      "-type f -iregex '.*\\.\\(ada\\|asm\\|awk\\|c\\|cl\\|clj\\|cljs\\|cpp\\|cs\\|do\\|el\\|exp\\|fasl\\|gawk\\|go\\|h\\|hpp\\|hs\\|java\\|js\\|k\\|l\\|lisp\\|lsp\\|lua\\|m\\|mlr\\|mod\\|php\\|pl\\|prg\\|py\\|r\\|rb\\|rs\\|scala\\|scm\\|sed\\|sh\\|sql\\|swift\\|tcl\\|txr\\|v\\|zsh\\)$'")
     ("configs"
