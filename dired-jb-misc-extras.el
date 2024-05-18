@@ -69,6 +69,8 @@
 ;;    Copy marked files in dired buffer to the ‘kill-ring’ as a list of org hyperlinks.
 ;;  `dired-copy-orglink-to-rectangle'
 ;;    Copy marked files in dired buffer to a rectangle (which can be yanked with ‘yank-rectangle’).
+;;  `find-dired-preset'
+;;    Find files in DIR using NAME args from `find-dired-presets'
 ;;
 ;; The following existing commands are advised:
 ;;
@@ -76,7 +78,15 @@
 ;;    Display current thumbnail's original image in display buffer.
 ;;  `image-dired-thumbnail-display-external'
 ;;    Display current thumbnail externally using `run-associated-program' (if installed).
-
+;;; Customizable Options:
+;;
+;; Below is a list of customizable options:
+;;
+;;  `find-dired-presets'
+;;    Names sets of arguments for the find command when `find-dired-preset' is called.
+;;  `dired-orglink-presets'
+;;    Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'
+;;
 ;;; Installation:
 ;;
 ;; Put dired-jb-misc-extras.el in a directory in your load-path, e.g. ~/.emacs.d/
@@ -343,7 +353,7 @@ from the filepath of each link (passed as an argument)."
 				   ("newline separated" relative file-name-nondirectory "" "\n")
 				   ("org-table column" relative file-name-nondirectory "| " " |\n")
 				   ("org-list" relative file-name-nondirectory " - " " \n"))
-  "Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' or `dired-copy-orglink-to-rectangle'.
+  "Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'.
 Each sublist takes the form (DESC DIRSYM NAMEFILTER PREFIX SUFFIX); DESC is a description of the preset,
 DIRSYM is either 'relative, 'absolute or nil to indicate if links should be relative to `default-directory'
 or absolute filepaths, or relative to a directory prompted from the user.

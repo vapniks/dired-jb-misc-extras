@@ -42,14 +42,27 @@
     Rename original file corresponding to current thumbnail.
  - `image-dired-copy-original' :
     Copy original file corresponding to current thumbnail.
-
+ - `dired-copy-orglink-as-kill' :
+    Copy marked files in dired buffer to the ‘kill-ring’ as a list of org hyperlinks.
+ - `dired-copy-orglink-to-rectangle'
+    Copy marked files in dired buffer to a rectangle (which can be yanked with ‘yank-rectangle’).
+ - `find-dired-preset'
+    Find files in DIR using NAME args from `find-dired-presets'
+    
  The following existing commands are advised:
 
-  `image-dired-display-thumbnail-original-image'
+ - `image-dired-display-thumbnail-original-image'
     Display current thumbnail's original image in display buffer.
-  `image-dired-thumbnail-display-external'
+ - `image-dired-thumbnail-display-external'
     Display current thumbnail externally using `run-associated-program' (if installed).
+* User options
 
+ Below is a list of customizable options:
+
+ - `find-dired-presets'
+    Names sets of arguments for the find command when `find-dired-preset' is called.
+ - `dired-orglink-presets'
+    Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'
 * Installation
 
  Put dired-jb-misc-extras.el in a directory in your load-path, e.g. ~/.emacs.d/
