@@ -399,10 +399,10 @@ If a prefix key is used then a directory will be prompted for to make links rela
 	(kill-new linkstring)))))
 
 ;;;###autoload
-(defun dired-copy-orglink-to-rectangle (dir namefilter prefix suffix)
+(defun dired-copy-orglink-to-rectangle nil
   "Like `dired-copy-orglink-as-kill' but save to rectangle instead of `kill-ring'.
 The rectangle can be yanked with `yank-rectangle'."
-  (interactive (dired-copy-orglink-get-args))
+  (interactive)
   (cl-destructuring-bind (dir namefilter prefix suffix)
       (dired-copy-orglink-get-args)
     (let* ((filepaths (or (dired-get-subdir)
