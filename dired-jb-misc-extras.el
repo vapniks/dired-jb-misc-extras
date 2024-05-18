@@ -336,7 +336,8 @@ Optional args PREFIX & SUFFIX are strings to prepend & append to the links, and 
 become part of the link themselves, by default they are empty strings. 
 Alternatively PREFIX & SUFFIX may also be functions used to generate prefix & suffix strings
 from the filepath of each link (passed as an argument)."
-  (let* ((paths (mapcar (if dir (lambda (x) (file-relative-name x dir)) 'identity)
+  (let* ((paths (mapcar (if (and dir (not (equal dir "/")))
+			    (lambda (x) (file-relative-name x dir)) 'identity)
 			(if (stringp filepaths) (list filepaths) filepaths))))
     (mapcar (lambda (path) (concat (if (functionp prefix)
 				       (funcall prefix path)
@@ -376,12 +377,11 @@ The remaining elements are used for arguments of the same name for `file-name-as
 				 (append (mapcar 'car dired-orglink-presets)
 					 '("enter format manually"))))
 	 (args (cdr (assoc descr dired-orglink-presets)))
-	 (dir (if current-prefix-arg
-		  (read-directory-name "Make links relative to dir: ")
-		(cl-case (car args)
-		  (relative default-directory)
-		  (absolute nil)
-		  (t (read-directory-name "Make links relative to dir: "))))))
+	 (dir (cond ((equal current-prefix-arg '(16)) nil)
+		    (current-prefix-arg (read-directory-name "Make links relative to dir: "))
+		    ((eq (car args) 'relative) default-directory)
+		    ((eq (car args) 'absolute) nil)
+		    (t (read-directory-name "Make links relative to dir: ")))))
     (if (equal descr "enter format manually")
 	(list
 	 (read-directory-name "Make links relative to dir: ")
