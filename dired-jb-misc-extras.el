@@ -428,6 +428,8 @@ The rectangle can be yanked with `yank-rectangle'."
      "-type f -iregex '.*\\.\\(cdf\\|csv\\|dat\\|dkvp\\|h5\\|hdf5\\|json\\|mat\\|nc\\|Rdata\\|rds\\|sdxf\\|sqlite\\|tsv\\|xls\\|xlsx\\|xml\\)$'")
     ("code"
      "-type f -iregex '.*\\.\\(ada\\|asm\\|awk\\|c\\|cl\\|clj\\|cljs\\|cpp\\|cs\\|do\\|el\\|exp\\|fasl\\|gawk\\|go\\|h\\|hpp\\|hs\\|java\\|js\\|k\\|l\\|lisp\\|lsp\\|lua\\|m\\|mlr\\|mod\\|php\\|pl\\|prg\\|py\\|r\\|rb\\|rs\\|scala\\|scm\\|sed\\|sh\\|sql\\|swift\\|tcl\\|txr\\|v\\|zsh\\)$'")
+    ("configs"
+     "-name '.*' -o \\( -type f -name '*config' \\) -o \\( -type f -name '*.yml' \\) ")
     ("files containing regexp"
      "-type f -a -exec grep -q '%1' {} \\\; " (lambda nil (read-regexp "grep regexp: "))))
   "Named sets of arguments for the find command when `find-dired-preset' is called.
