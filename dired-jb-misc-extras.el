@@ -338,63 +338,77 @@ from the filepath of each link (passed as an argument)."
 				       (funcall suffix path)
 				     suffix)))
 	    paths)))
+;;;###autoload
+(defcustom dired-orglink-presets '(("space separated" relative file-name-nondirectory "" " ")
+				   ("newline separated" relative file-name-nondirectory "" "\n")
+				   ("org-table column" relative file-name-nondirectory "| " " |\n")
+				   ("org-list" relative file-name-nondirectory " - " " \n"))
+  "Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' or `dired-copy-orglink-to-rectangle'.
+Each sublist takes the form (DESC DIRSYM NAMEFILTER PREFIX SUFFIX); DESC is a description of the preset,
+DIRSYM is either 'relative, 'absolute or nil to indicate if links should be relative to `default-directory'
+or absolute filepaths, or relative to a directory prompted from the user.
+The remaining elements are used for arguments of the same name for `file-name-as-orglink'."
+  :type '(repeat :tag "Presets" (list :tag "Presets"
+				      (string :tag "Description")
+				      (choice :tag "Link type"
+					      (const :tag "Absolute" absolute)
+					      (const :tag "Relative" relative)
+					      (const :tag "Prompt relative dir" nil))
+				      (function :tag "Link rename function"
+						:help-echo "Function takes filepath as arg and returns linkname"
+						:value file-name-nondirectory)
+				      (string :tag "Prefix")
+				      (string :tag "Suffix")))
+  :group 'dired)
+
+(defun dired-copy-orglink-get-args nil
+  (let* ((descr (completing-read "Copy links as: "
+				 (append (mapcar 'car dired-orglink-presets)
+					 '("enter format manually"))))
+	 (args (cdr (assoc descr dired-orglink-presets)))
+	 (dir (if current-prefix-arg
+		  (read-directory-name "Make links relative to dir: ")
+		(cl-case (car args)
+		  (relative default-directory)
+		  (absolute nil)
+		  (t (read-directory-name "Make links relative to dir: "))))))
+    (if (equal descr "enter format manually")
+	(list
+	 (read-directory-name "Make links relative to dir: ")
+	 (read-from-minibuffer "Function to rename link (default 'file-name-nondirectory): "
+			       nil nil t nil "file-name-nondirectory")
+	 (read-from-minibuffer "Prefix string: ")
+	 (read-from-minibuffer "Suffix string: "))
+      (cons dir (cdr args)))))
 
 ;;;###autoload
-(defun dired-copy-orglink-as-kill (dir namefilter prefix suffix)
+(defun dired-copy-orglink-as-kill nil
   "Copy marked files in dired buffer to the `kill-ring' as a list of org hyperlinks.
-Args DIR, NAMEFILTER, PREFIX & SUFFIX are the same as for `file-name-as-hyperlink'.
-If a prefix key is used then other args DIR, NAMEFILTER, PREFIX & SUFFIX will be prompted for."  
-  (interactive (list (if current-prefix-arg
-			 (read-directory-name "Make links relative to dir: "))
-		     (if current-prefix-arg
-			 (read-from-minibuffer "Function (default 'file-name-nondirectory): "
-					       nil nil t nil "file-name-nondirectory")
-		       'file-name-nondirectory)
-		     (cl-case current-prefix-arg
-		       ('nil "")
-		       (1 "| ")
-		       (2 " - ")
-		       (t (read-from-minibuffer "Prefix string: ")))
-		     ;; (if current-prefix-arg
-		     ;; 	 (read-from-minibuffer "Prefix string: ")
-		     ;;   "")
-		     (cl-case current-prefix-arg
-		       ('nil "")
-		       (1 " |\n")
-		       (2 " \n")
-		       (t (read-from-minibuffer "Suffix string: ")))
-		     ;; (if current-prefix-arg
-		     ;; 	 (read-from-minibuffer "Suffix string: ")
-		     ;;   "")
-		     ))
-  (let* ((filepaths (or (dired-get-subdir)
-			(dired-get-marked-files)))
-	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix))
-	 (linkstring (mapconcat 'identity links " ")))
-    (if (eq last-command 'kill-region)
-	(kill-append linkstring nil)
-      (kill-new linkstring))))
+Prompt the user for named preset arguments from `dired-orglink-presets' specifying the 
+arguments to pass to `file-name-as-orglink'.
+If a prefix key is used then a directory will be prompted for to make links relative to."  
+  (interactive)
+  (cl-destructuring-bind (dir namefilter prefix suffix)
+      (dired-copy-orglink-get-args)
+    (let* ((filepaths (or (dired-get-subdir)
+			  (dired-get-marked-files)))
+	   (links (file-name-as-orglink filepaths dir namefilter prefix suffix))
+	   (linkstring (mapconcat 'identity links "")))
+      (if (eq last-command 'kill-region)
+	  (kill-append linkstring nil)
+	(kill-new linkstring)))))
 
 ;;;###autoload
 (defun dired-copy-orglink-to-rectangle (dir namefilter prefix suffix)
-  "Copy marked files in dired buffer to a rectangle (which can be yanked with `yank-rectangle').
-Args are the same as for `file-name-as-hyperlink'."
-  (interactive (list (if current-prefix-arg
-			 (read-directory-name "Make links relative to dir: "))
-		     (if current-prefix-arg
-			 (read-from-minibuffer "Function (default 'file-name-nondirectory): "
-					       nil nil t nil "file-name-nondirectory")
-		       'file-name-nondirectory)
-		     (if current-prefix-arg
-			 (read-from-minibuffer "Prefix string: ")
-		       "")
-		     (if current-prefix-arg
-			 (read-from-minibuffer "Suffix string: ")
-		       "")))
-  (let* ((filepaths (or (dired-get-subdir)
-			(dired-get-marked-files)))
-	 (links (file-name-as-hyperlink filepaths dir namefilter prefix suffix)))
-    (setq killed-rectangle links)))
+  "Like `dired-copy-orglink-as-kill' but save to rectangle instead of `kill-ring'.
+The rectangle can be yanked with `yank-rectangle'."
+  (interactive (dired-copy-orglink-get-args))
+  (cl-destructuring-bind (dir namefilter prefix suffix)
+      (dired-copy-orglink-get-args)
+    (let* ((filepaths (or (dired-get-subdir)
+			  (dired-get-marked-files)))
+	   (links (file-name-as-orglink filepaths dir namefilter prefix suffix)))
+      (setq killed-rectangle links))))
 
 ;;;###autoload
 (defcustom find-dired-presets
