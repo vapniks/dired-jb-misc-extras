@@ -431,7 +431,8 @@ The rectangle can be yanked with `yank-rectangle'."
     ("configs"
      "-name '.*' -o \\( -type f -name '*config' \\) -o \\( -type f -name '*.yml' \\) ")
     ("files containing regexp"
-     "-type f -a -exec grep -q '%1' {} \\\; " (lambda nil (read-regexp "grep regexp: "))))
+     "-type f -a -exec grep -q '%1' {} \\\; " (lambda nil (read-regexp "grep regexp: ")))
+    ("manual entry" "%1" (lambda nil (read-string "Run `find' (with args): "))))
   "Named sets of arguments for the find command when `find-dired-preset' is called.
 
 Each element of this list is in the form (NAME ARGS PROMPT/FUNCTION...)
@@ -455,7 +456,7 @@ placeholder with; either a string prompted from the user, or the return value of
 ;;;###autoload
 (defun find-dired-preset (dir name &optional edit)
   "Find files in DIR using NAME args from `find-dired-presets'.
-If optional argument EDIT is non-nil then prompt the user to edit the
+If optional argument EDIT is non-nil, or a prefix arg is used then prompt the user to edit the
 find arguments before running `find-dired'."
   (interactive (list (read-directory-name "Dir: " nil nil t)
 		     (completing-read "File types: "
