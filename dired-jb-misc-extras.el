@@ -460,7 +460,8 @@ each placeholder with; either a string prompted from the user, or the return val
     ("version" . ("-exec ls -ldv {} +" . "-ldv"))
     ("modification time" . ("-exec ls -ldt {} +" . "-ldt"))
     ("status change time" . ("-exec ls -ldtc {} +" . "-ldtc"))
-    ("access time" . ("-exec ls -ldtu {} +" . "-ldtu")))
+    ("access time" . ("-exec ls -ldtu {} +" . "-ldtu"))
+    ("directories first" . ("-exec ls -ld --group-directories-first {} +" . "-ld --group-directories-first")))
   "Presets for `find-ls-option'. 
 Each element is a cons cell whose key is a name that the user can select when `find-dired-preset' is run,
 and whose value is a cons cell of the same form as `find-ls-option'."
