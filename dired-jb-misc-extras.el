@@ -458,6 +458,7 @@ placeholder with; either a string prompted from the user, or the return value of
   "Find files in DIR using NAME args from `find-dired-presets'.
 If optional argument EDIT is non-nil, or a prefix arg is used then prompt the user to edit the
 find arguments before running `find-dired'."
+  (require 'find-dired)
   (interactive (list (read-directory-name "Dir: " nil nil t)
 		     (completing-read "File types: "
 				      (mapcar 'car find-dired-presets))
@@ -481,13 +482,17 @@ find arguments before running `find-dired'."
 		      ["Find Files Using Preset..." find-dired-preset]
 		      "`find' <anything>..."))
 
-(when (boundp 'diredp-multiple-recursive-menu)
-  (easy-menu-add-item diredp-multiple-recursive-menu nil
-		      ["Copy File Names As Orglinks To Rectangle" dired-copy-orglink-to-rectangle t]
-		      "Copy File Names (to paste)")
-  (easy-menu-add-item diredp-multiple-recursive-menu nil
-		      ["Copy File Names As Orglinks (to paste)" dired-copy-orglink-as-kill t]
-		      "Copy File Names (to paste)"))
+(easy-menu-add-item global-map '("menu-bar" "Tools") ["(unix) find files..." find-dired-preset t] "Compile...")
+;;(easy-menu-remove-item global-map '("menu-bar" "Tools") "(unix) find files...")
+
+(easy-menu-add-item dired-mode-map '("menu-bar" "operate")
+		    ["Copy File Names As Orglinks (to kill-ring)" dired-copy-orglink-as-kill t]
+		    "Copy File Names (to Paste)")
+;;(easy-menu-remove-item dired-mode-map '("menu-bar" "operate") "Copy File Names As Orglinks (to kill-ring)")
+(easy-menu-add-item dired-mode-map '("menu-bar" "operate") 
+		    ["Copy File Names As Orglinks (to rectangle)" dired-copy-orglink-to-rectangle t]
+		    "Copy File Names (to Paste)")
+;;(easy-menu-remove-item dired-mode-map '("menu-bar" "operate") "Copy File Names As Orglinks (to rectangle)")
 
 (provide 'dired-jb-misc-extras)
 
