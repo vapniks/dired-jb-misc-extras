@@ -454,6 +454,22 @@ each placeholder with; either a string prompted from the user, or the return val
 					  "Function must return a string to replace placeholder in args")))))
   :group 'find-dired)
 
+(defcustom find-dired-preset-ls-option
+  '(("name" . ("-exec ls -ld {} +" . "-ld"))
+    ("extension" . ("-exec ls -ldX {} +" . "-ldX"))
+    ("version" . ("-exec ls -ldv {} +" . "-ldv"))
+    ("modification time" . ("-exec ls -ldt {} +" . "-ldt"))
+    ("status change time" . ("-exec ls -ldtc {} +" . "-ldtc"))
+    ("access time" . ("-exec ls -ldtu {} +" . "-ldtu")))
+  "Presets for `find-ls-option'. 
+Each element is a cons cell whose key is a name that the user can select when `find-dired-preset' is run,
+and whose value is a cons cell of the same form as `find-ls-option'."
+  :type '(alist :key-type (string :tag "name")
+		:value-type (cons :tag "value for `find-ls-option'"
+				  (string :tag "final find option" :value "-exec ls -ld {} +")
+				  (string :tag "ls switches" :value "-ld")))
+  :group 'find-dired)
+
 ;;;###autoload
 (defun find-dired-preset (dir name &optional edit)
   "Find files in DIR using NAME args from `find-dired-presets'.
@@ -467,18 +483,9 @@ find arguments before running `find-dired'."
   (let* ((args (assoc name find-dired-presets))
 	 (argstr (cadr args))
 	 (replacements (cddr args))
-	 (choice (completing-read
-		  "Sort by: "
-		  '("name" "extension" "version" "modification time"
-		    "status change time" "access time" "default")))
-	 (find-ls-option (cond
-			  ((equal choice "name") '("-exec ls -ld {} +" . "-ld"))
-			  ((equal choice "extension") '("-exec ls -ldX {} +" . "-ldX"))
-			  ((equal choice "version") '("-exec ls -ldv {} +" . "-ldv"))
-			  ((equal choice "modification time") '("-exec ls -ldt {} +" . "-ldt"))
-			  ((equal choice "status change time") '("-exec ls -ldtc {} +" . "-ldtc"))
-			  ((equal choice "access time") '("-exec ls -ldtu {} +" . "-ldtu"))
-			  (t find-ls-option))))
+	 (find-ls-option (cdr (assoc
+			       (completing-read "Sort by: " find-dired-preset-ls-option)
+			       find-dired-preset-ls-option))))
     (cl-loop for repl in replacements
 	     for i from 1
 	     do (setq argstr
