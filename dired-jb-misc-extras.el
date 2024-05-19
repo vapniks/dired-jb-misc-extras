@@ -472,15 +472,27 @@ and whose value is a cons cell of the same form as `find-ls-option'."
   :group 'find-dired)
 
 ;;;###autoload
-(defun find-dired-preset (dir name &optional edit)
+(defun find-dired-preset (dir name)
   "Find files in DIR using NAME args from `find-dired-presets'.
-If optional argument EDIT is non-nil, or a prefix arg is used then prompt the user to edit the
-find arguments before running `find-dired'."
+When called interactively DIR & NAME will be prompted for. If a prefix arg is used then the user
+is offered a list of recently visited directories to choose from."
   (require 'find-dired)
-  (interactive (list (read-directory-name "Dir: " nil nil t)
+  (interactive (list (if current-prefix-arg
+			 (completing-read "Recent dir: "
+					  (let ((items))
+					    (dolist (item file-name-history)
+					      (if (and (stringp item)
+						       (not (string-match ":" item))
+						       (> (length item) 0))
+						  (let ((itemd (file-name-directory item)))
+						    (if (and (stringp itemd)
+							     (file-directory-p itemd)
+							     (not (member itemd items)))
+							(add-to-list 'items itemd t)))))
+					    items))
+		       (read-directory-name "Dir: " nil nil t))
 		     (completing-read "File types: "
-				      (mapcar 'car find-dired-presets))
-		     current-prefix-arg))
+				      (mapcar 'car find-dired-presets))))
   (let* ((args (assoc name find-dired-presets))
 	 (argstr (cadr args))
 	 (replacements (cddr args))
@@ -495,7 +507,6 @@ find arguments before running `find-dired'."
 					  (read-string repl)
 					(funcall repl))
 				      argstr)))
-    (if edit (setq argstr (read-string "Find args: " argstr)))
     (find-dired dir argstr)))
 
 (when (boundp 'menu-bar-run-find-menu)
