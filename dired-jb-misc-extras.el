@@ -422,7 +422,8 @@ The rectangle can be yanked with `yank-rectangle'."
 
 ;;;###autoload
 (defcustom find-dired-presets
-  '(("images" "-type f -iregex '.*\\.\\(avif\\|bmp\\|eps\\|gif\\|heif\\|jpeg\\|jpg\\|png\\|svg\\|tiff\\|webp\\|xcf\\)$'")
+  '(("images"
+     "-type f -iregex '.*\\.\\(avif\\|bmp\\|eps\\|gif\\|heif\\|jpeg\\|jpg\\|png\\|svg\\|tiff\\|webp\\|xcf\\)$'")
     ("documents" "-type f -iregex '.*\\.\\(docx\\|doc\\|htm\\|html\\|odt\\|org\\|pdf\\|ppt\\|pptx\\|rtf\\|tex\\|txt\\)$'")
     ("data"
      "-type f -iregex '.*\\.\\(cdf\\|csv\\|dat\\|dkvp\\|h5\\|hdf5\\|json\\|mat\\|nc\\|Rdata\\|rds\\|sav\\|sdxf\\|sqlite\\|tsv\\|xls\\|xlsx\\|xml\\)$'")
@@ -438,9 +439,9 @@ The rectangle can be yanked with `yank-rectangle'."
 Each element of this list is in the form (NAME ARGS PROMPT/FUNCTION...)
 NAME is a name that the user can select when `find-dired-preset' is executed.
 ARGS is a string of arguments for find which may contain placeholders %1, %2, etc.
-and should not contain the initial search directory, or the final \"-exec ls -ld {} \;\"
-The PROMPT/FUNCTION elements correspond with the placeholders, and define what to replace each
-placeholder with; either a string prompted from the user, or the return value of a FUNCTION."
+and it should not contain the initial search directory, or the final \"-exec ls -ld {} \;\"
+The PROMPT/FUNCTION elements correspond with the placeholders, and define what to replace
+each placeholder with; either a string prompted from the user, or the return value of a FUNCTION."
   :type '(repeat
 	  (list :tag "Named args"
 		(string :tag "Name" :help-echo "Name for this set of args")
@@ -465,7 +466,19 @@ find arguments before running `find-dired'."
 		     current-prefix-arg))
   (let* ((args (assoc name find-dired-presets))
 	 (argstr (cadr args))
-	 (replacements (cddr args)))
+	 (replacements (cddr args))
+	 (choice (completing-read
+		  "Sort by: "
+		  '("name" "extension" "version" "modification time"
+		    "status change time" "access time" "default")))
+	 (find-ls-option (cond
+			  ((equal choice "name") '("-exec ls -ld {} +" . "-ld"))
+			  ((equal choice "extension") '("-exec ls -ldX {} +" . "-ldX"))
+			  ((equal choice "version") '("-exec ls -ldv {} +" . "-ldv"))
+			  ((equal choice "modification time") '("-exec ls -ldt {} +" . "-ldt"))
+			  ((equal choice "status change time") '("-exec ls -ldtc {} +" . "-ldtc"))
+			  ((equal choice "access time") '("-exec ls -ldtu {} +" . "-ldtu"))
+			  (t find-ls-option))))
     (cl-loop for repl in replacements
 	     for i from 1
 	     do (setq argstr
