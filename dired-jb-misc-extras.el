@@ -453,7 +453,7 @@ each placeholder with; either a string prompted from the user, or the return val
 					  :help-echo
 					  "Function must return a string to replace placeholder in args")))))
   :group 'find-dired)
-
+;;;###autoload
 (defcustom find-dired-preset-ls-option
   '(("name" . ("-exec ls -ld {} +" . "-ld"))
     ("extension" . ("-exec ls -ldX {} +" . "-ldX"))
