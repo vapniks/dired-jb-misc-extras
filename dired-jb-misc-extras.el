@@ -477,8 +477,11 @@ and whose value is a cons cell of the same form as `find-ls-option'."
 ;;;###autoload
 (defun find-dired-preset (dir name &optional lsopts)
   "Find files in DIR using NAME args from `find-dired-presets', and LSOPTS args from `find-dired-preset-ls-option'.
-When called interactively DIR & NAME will be prompted for. If a prefix arg is used then the user
-is offered a list of recently visited directories to choose from."
+When called interactively DIR, NAME & LSOPTS will be prompted for. If a prefix arg is used then the user
+is offered a list of recently visited directories to choose from.
+When called non-interactively NAME can be either the name of preset find options (see `find-dired-presets'), 
+or a string containing find args. LSOPTS can be either the name of preset ls options (see `find-dired-preset-ls-option'), 
+or a cons cell to shadow `find-ls-options', or nil to use `find-ls-options' unchanged."
   (interactive (list (if current-prefix-arg
 			 (completing-read "Recent dir: "
 					  (let ((items))
@@ -496,12 +499,12 @@ is offered a list of recently visited directories to choose from."
 		     (completing-read "File types: " (mapcar 'car find-dired-presets))
 		     (completing-read "Sort by: " find-dired-preset-ls-option)))
   (require 'find-dired)
-  (let* ((args (assoc name find-dired-presets))
+  (let* ((args (or (assoc name find-dired-presets) (list 1 name)))
 	 (argstr (cadr args))
 	 (replacements (cddr args))
 	 (find-ls-option (if (stringp lsopts)
 			     (cdr (assoc lsopts find-dired-preset-ls-option))
-			   lsopts)))
+			   (or lsopts find-ls-option))))
     (cl-loop for repl in replacements
 	     for i from 1
 	     do (setq argstr
