@@ -402,7 +402,8 @@ The remaining elements are used for arguments of the same name for `file-name-as
   "Copy marked files in dired buffer to the `kill-ring' as a list of org hyperlinks.
 Prompt the user for named preset arguments from `dired-orglink-presets' specifying the 
 arguments to pass to `file-name-as-orglink'.
-If a prefix key is used then a directory will be prompted for to make links relative to."  
+If a prefix key is used then a directory will be prompted for to make links relative to.
+With a double prefix (C-u C-u) the links will be absolute paths."
   (interactive)
   (cl-destructuring-bind (dir namefilter prefix suffix)
       (dired-copy-orglink-get-args)
