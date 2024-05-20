@@ -355,8 +355,11 @@ from the filepath of each link (passed as an argument)."
 (defcustom dired-orglink-presets '(("space separated" relative file-name-nondirectory "" " ")
 				   ("newline separated" relative file-name-nondirectory "" "\n")
 				   ("org-table column" relative file-name-nondirectory "| " " |\n")
+				   ("org-table column (show path)" relative identity "| " " |\n")
 				   ("org-list" relative file-name-nondirectory " - " " \n")
-				   ("org headers" relative file-name-nondirectory "** " " \n"))
+				   ("org-list (show path)" relative identity " - " " \n")				   
+				   ("org headers" relative file-name-nondirectory "** " " \n")
+				   ("org headers (show path)" relative identity "** " " \n"))
   "Named preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'.
 Each sublist takes the form (DESC DIRSYM NAMEFILTER PREFIX SUFFIX); DESC is a description of the preset,
 DIRSYM is either 'relative, 'absolute or nil to indicate if links should be relative to `default-directory'
