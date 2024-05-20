@@ -489,51 +489,52 @@ and whose value is a cons cell of the same form as `find-ls-option'."
 ;;;###autoload
 (defun find-dired-preset (dir name &optional lsopts)
   "Find files in DIR using NAME args from `find-dired-presets', and LSOPTS args from `find-dired-preset-ls-option'.
-When called interactively DIR, NAME & LSOPTS will be prompted for. If a prefix arg is used then the user
-is offered a list of recently visited directories to choose from.
+When called interactively DIR, NAME & LSOPTS will be prompted for. If \"adjust preset\" is chosen for NAME then
+another one will be prompted for, and the user is given the option to adjust the associated find options.
+If a prefix arg is used then the user is offered a list of recently visited directories to choose from. 
 When called non-interactively NAME can be either the name of preset find options (see `find-dired-presets'), 
 or a string containing find args. LSOPTS can be either the name of preset ls options (see `find-dired-preset-ls-option'), 
 or a cons cell to shadow `find-ls-options', or nil to use `find-ls-options' unchanged."
-  (interactive (list (if current-prefix-arg
-			 (completing-read "Recent dir: "
-					  (let ((items))
-					    (dolist (item file-name-history)
-					      (if (and (stringp item)
-						       (not (string-match ":" item))
-						       (> (length item) 0))
-						  (let ((itemd (file-name-directory item)))
-						    (if (and (stringp itemd)
-							     (file-directory-p itemd)
-							     (not (member itemd items)))
-							(add-to-list 'items itemd t)))))
-					    items))
-		       (read-directory-name "Dir: " nil nil t))
-		     (completing-read "File types: "
-				      (append (mapcar 'car find-dired-presets)
-					      (list "adjust preset")))
-		     (completing-read "Sort by: " find-dired-preset-ls-option)))
-  (require 'find-dired)
-  (let* ((args (if (equal name "adjust preset")
-		   (list "adjust"
-			 (read-string "Run `find' (with args): "
-				      (cadr (assoc (completing-read "File types: "
-								    (mapcar 'car find-dired-presets))
-						   find-dired-presets))))
-		 (or (assoc name find-dired-presets) (list 1 name))))
-	 (argstr (cadr args))
-	 (replacements (cddr args))
-	 (find-ls-option (if (stringp lsopts)
-			     (cdr (assoc lsopts find-dired-preset-ls-option))
-			   (or lsopts find-ls-option))))
-    (cl-loop for repl in replacements
-	     for i from 1
-	     do (setq argstr
-		      (string-replace (concat "%" (number-to-string i))
-				      (if (stringp repl)
-					  (read-string repl)
-					(funcall repl))
-				      argstr)))
-    (find-dired dir argstr)))
+(interactive (list (if current-prefix-arg
+		       (completing-read "Recent dir: "
+					(let ((items))
+					  (dolist (item file-name-history)
+					    (if (and (stringp item)
+						     (not (string-match ":" item))
+						     (> (length item) 0))
+						(let ((itemd (file-name-directory item)))
+						  (if (and (stringp itemd)
+							   (file-directory-p itemd)
+							   (not (member itemd items)))
+						      (add-to-list 'items itemd t)))))
+					  items))
+		     (read-directory-name "Dir: " nil nil t))
+		   (completing-read "File types: "
+				    (append (mapcar 'car find-dired-presets)
+					    (list "adjust preset")))
+		   (completing-read "Sort by: " find-dired-preset-ls-option)))
+(require 'find-dired)
+(let* ((args (if (equal name "adjust preset")
+		 (list "adjust"
+		       (read-string "Run `find' (with args): "
+				    (cadr (assoc (completing-read "File types: "
+								  (mapcar 'car find-dired-presets))
+						 find-dired-presets))))
+	       (or (assoc name find-dired-presets) (list 1 name))))
+       (argstr (cadr args))
+       (replacements (cddr args))
+       (find-ls-option (if (stringp lsopts)
+			   (cdr (assoc lsopts find-dired-preset-ls-option))
+			 (or lsopts find-ls-option))))
+  (cl-loop for repl in replacements
+	   for i from 1
+	   do (setq argstr
+		    (string-replace (concat "%" (number-to-string i))
+				    (if (stringp repl)
+					(read-string repl)
+				      (funcall repl))
+				    argstr)))
+  (find-dired dir argstr)))
 
 (when (boundp 'menu-bar-run-find-menu)
   (easy-menu-add-item menu-bar-run-find-menu nil
