@@ -47,7 +47,7 @@
  - `dired-copy-orglink-to-rectangle' :
     Copy marked files in dired buffer to a rectangle (which can be yanked with ‘yank-rectangle’).
  - `find-dired-preset' :
-    Find files in DIR using NAME args from `find-dired-presets'
+    Find files in DIR using NAME args from `find-dired-presets', and LSOPTS args from `find-dired-preset-ls-option'.
     
  The following existing commands are advised:
 
@@ -60,9 +60,12 @@
  Below is a list of customizable options:
 
  - `find-dired-presets' :
-    Names sets of arguments for the find command when `find-dired-preset' is called.
+    Named sets of arguments for the find command when `find-dired-preset' is called.
+ - `find-dired-preset-ls-option'
+    Named presets for ‘find-ls-option’. 
  - `dired-orglink-presets' :
-    Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'
+    Named preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'
+
 * Installation
 
  Put dired-jb-misc-extras.el in a directory in your load-path, e.g. ~/.emacs.d/

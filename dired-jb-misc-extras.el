@@ -70,7 +70,7 @@
 ;;  `dired-copy-orglink-to-rectangle'
 ;;    Copy marked files in dired buffer to a rectangle (which can be yanked with ‘yank-rectangle’).
 ;;  `find-dired-preset'
-;;    Find files in DIR using NAME args from `find-dired-presets'
+;;    Find files in DIR using NAME args from `find-dired-presets', and LSOPTS args from `find-dired-preset-ls-option'.
 ;;
 ;; The following existing commands are advised:
 ;;
@@ -83,9 +83,11 @@
 ;; Below is a list of customizable options:
 ;;
 ;;  `find-dired-presets'
-;;    Names sets of arguments for the find command when `find-dired-preset' is called.
+;;    Named sets of arguments for the find command when `find-dired-preset' is called.
+;;  `find-dired-preset-ls-option'
+;;    Named presets for ‘find-ls-option’. 
 ;;  `dired-orglink-presets'
-;;    Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'
+;;    Named preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'
 ;;
 ;;; Installation:
 ;;
@@ -355,7 +357,7 @@ from the filepath of each link (passed as an argument)."
 				   ("org-table column" relative file-name-nondirectory "| " " |\n")
 				   ("org-list" relative file-name-nondirectory " - " " \n")
 				   ("org headers" relative file-name-nondirectory "** " " \n"))
-  "Preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'.
+  "Named preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'.
 Each sublist takes the form (DESC DIRSYM NAMEFILTER PREFIX SUFFIX); DESC is a description of the preset,
 DIRSYM is either 'relative, 'absolute or nil to indicate if links should be relative to `default-directory'
 or absolute filepaths, or relative to a directory prompted from the user.
@@ -463,7 +465,7 @@ each placeholder with; either a string prompted from the user, or the return val
     ("status change time" . ("-exec ls -ldtc {} +" . "-ldtc"))
     ("access time" . ("-exec ls -ldtu {} +" . "-ldtu"))
     ("directories first" . ("-exec ls -ld --group-directories-first {} +" . "-ld --group-directories-first")))
-  "Presets for `find-ls-option'. 
+  "Named presets for `find-ls-option'. 
 Each element is a cons cell whose key is a name that the user can select when `find-dired-preset' is run,
 and whose value is a cons cell of the same form as `find-ls-option'."
   :type '(alist :key-type (string :tag "name")
@@ -474,7 +476,7 @@ and whose value is a cons cell of the same form as `find-ls-option'."
 
 ;;;###autoload
 (defun find-dired-preset (dir name &optional lsopts)
-  "Find files in DIR using NAME args from `find-dired-presets'.
+  "Find files in DIR using NAME args from `find-dired-presets', and LSOPTS args from `find-dired-preset-ls-option'.
 When called interactively DIR & NAME will be prompted for. If a prefix arg is used then the user
 is offered a list of recently visited directories to choose from."
   (interactive (list (if current-prefix-arg
@@ -491,8 +493,7 @@ is offered a list of recently visited directories to choose from."
 							(add-to-list 'items itemd t)))))
 					    items))
 		       (read-directory-name "Dir: " nil nil t))
-		     (completing-read "File types: "
-				      (mapcar 'car find-dired-presets))
+		     (completing-read "File types: " (mapcar 'car find-dired-presets))
 		     (completing-read "Sort by: " find-dired-preset-ls-option)))
   (require 'find-dired)
   (let* ((args (assoc name find-dired-presets))
