@@ -359,7 +359,11 @@ from the filepath of each link (passed as an argument)."
 				   ("org-list" relative file-name-nondirectory " - " " \n")
 				   ("org-list (show path)" relative identity " - " " \n")				   
 				   ("org headers" relative file-name-nondirectory "** " " \n")
-				   ("org headers (show path)" relative identity "** " " \n"))
+				   ("org headers (show path)" relative identity "** " " \n")
+				   ("org headers (tree)" relative file-name-nondirectory
+				    (lambda (x) (concat (make-string (length (split-string path "/")) ?*)
+							" "))
+				    " \n"))
   "Named preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'.
 Each sublist takes the form (DESC DIRSYM NAMEFILTER PREFIX SUFFIX); DESC is a description of the preset,
 DIRSYM is either 'relative, 'absolute or nil to indicate if links should be relative to `default-directory'
@@ -389,19 +393,23 @@ The remaining elements are used for arguments of the same name for `file-name-as
 		    ((eq (car args) 'absolute) nil)
 		    (t (read-directory-name "Make links relative to dir: ")))))
     (if (equal descr "enter format manually")
-	(list
-	 (read-directory-name "Make links relative to dir: ")
-	 (read-from-minibuffer "Function to rename link (default 'file-name-nondirectory): "
-			       nil nil t nil "file-name-nondirectory")
-	 (read-from-minibuffer "Prefix string: ")
-	 (read-from-minibuffer "Suffix string: "))
+	(list dir
+	      (read-from-minibuffer "Function to rename link (default 'file-name-nondirectory): "
+				    nil nil t nil "file-name-nondirectory")
+	      (let* ((str (read-from-minibuffer "Prefix string or function: "))
+		     (lsp (ignore-errors (read str))))
+		(if (functionp lsp) lsp str))
+	      (let* ((str (read-from-minibuffer "Suffix string or function: "))
+		     (lsp (ignore-errors (read str))))
+		(if (functionp lsp) lsp str)))
       (cons dir (cdr args)))))
 
 ;;;###autoload
 (defun dired-copy-orglink-as-kill nil
   "Copy marked files in dired buffer to the `kill-ring' as a list of org hyperlinks.
 Prompt the user for named preset arguments from `dired-orglink-presets' specifying the 
-arguments to pass to `file-name-as-orglink'.
+arguments to pass to `file-name-as-orglink'. The PREFIX and SUFFIX args may be either
+strings, or functions of one argument (the filepath) that return a prefix/suffix.
 If a prefix key is used then a directory will be prompted for to make links relative to.
 With a double prefix (C-u C-u) the links will be absolute paths."
   (interactive)
@@ -500,10 +508,18 @@ or a cons cell to shadow `find-ls-options', or nil to use `find-ls-options' unch
 							(add-to-list 'items itemd t)))))
 					    items))
 		       (read-directory-name "Dir: " nil nil t))
-		     (completing-read "File types: " (mapcar 'car find-dired-presets))
+		     (completing-read "File types: "
+				      (append (mapcar 'car find-dired-presets)
+					      (list "adjust preset")))
 		     (completing-read "Sort by: " find-dired-preset-ls-option)))
   (require 'find-dired)
-  (let* ((args (or (assoc name find-dired-presets) (list 1 name)))
+  (let* ((args (if (equal name "adjust preset")
+		   (list "adjust"
+			 (read-string "Run `find' (with args): "
+				      (cadr (assoc (completing-read "File types: "
+								    (mapcar 'car find-dired-presets))
+						   find-dired-presets))))
+		 (or (assoc name find-dired-presets) (list 1 name))))
 	 (argstr (cadr args))
 	 (replacements (cddr args))
 	 (find-ls-option (if (stringp lsopts)
