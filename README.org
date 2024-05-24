@@ -18,7 +18,7 @@
 
  Bitcoin donations gratefully accepted: 12k9zUo9Dgqk8Rary2cuzyvAQWD5EAuZ4q
 
- This library provides various miscellaneous `dired' related commands & functions
+ This library provides various miscellaneous *dired* related commands & functions
  that I use occasionally. 
 
 
@@ -26,45 +26,45 @@
 
  Below is a complete command list:
 
- - `dired-get-size' :
+ - *dired-get-size* :
     Get total size of marked files using linux du command. This only works on local directories.
- - `dired-up-dir' :
+ - *dired-up-dir* :
     In dired go up a directory and replace current buffer, instead of creating a new one.
- - `dired-do-shell-command-regexp' :
+ - *dired-do-shell-command-regexp* :
     Create and run shell commands from selected filenames which match REGEXP.
- - `dired-find-file-other-window' :
+ - *dired-find-file-other-window* :
     Wrapper around dired-find-file-other-window.
- - `image-dired-show-all-tags' :
+ - *image-dired-show-all-tags* :
     Show all tags that have been used to tag files.
- - `image-dired-display-thumbnail-original-image-fullsize' :
+ - *image-dired-display-thumbnail-original-image-fullsize* :
     Display current thumbnail's original fullsize image in display buffer.
- - `image-dired-rename-original' :
+ - *image-dired-rename-original* :
     Rename original file corresponding to current thumbnail.
- - `image-dired-copy-original' :
+ - *image-dired-copy-original* :
     Copy original file corresponding to current thumbnail.
- - `dired-copy-orglink-as-kill' :
+ - *dired-copy-orglink-as-kill* :
     Copy marked files in dired buffer to the ‘kill-ring’ as a list of org hyperlinks.
- - `dired-copy-orglink-to-rectangle' :
+ - *dired-copy-orglink-to-rectangle* :
     Copy marked files in dired buffer to a rectangle (which can be yanked with ‘yank-rectangle’).
- - `find-dired-preset' :
-    Find files in DIR using NAME args from `find-dired-presets', and LSOPTS args from `find-dired-preset-ls-option'.
+ - *find-dired-preset* :
+    Find files in DIR using NAME args from *find-dired-presets*, and LSOPTS args from *find-dired-preset-ls-option*.
     
  The following existing commands are advised:
 
- - `image-dired-display-thumbnail-original-image' :
+ - *image-dired-display-thumbnail-original-image* :
     Display current thumbnail's original image in display buffer.
- - `image-dired-thumbnail-display-external' :
-    Display current thumbnail externally using `run-associated-program' (if installed).
+ - *image-dired-thumbnail-display-external* :
+    Display current thumbnail externally using *run-associated-program* (if installed).
 * User options
 
  Below is a list of customizable options:
 
- - `find-dired-presets' :
-    Named sets of arguments for the find command when `find-dired-preset' is called.
- - `find-dired-preset-ls-option'
+ - *find-dired-presets* :
+    Named sets of arguments for the find command when *find-dired-preset* is called.
+ - *find-dired-preset-ls-option*
     Named presets for ‘find-ls-option’. 
- - `dired-orglink-presets' :
-    Named preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'
+ - *dired-orglink-presets* :
+    Named preset arguments for *file-name-as-orglink* used by *dired-copy-orglink-as-kill* and *dired-copy-orglink-to-rectangle*
 
 * Installation
 
