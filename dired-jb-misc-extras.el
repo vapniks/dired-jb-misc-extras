@@ -362,8 +362,9 @@ from the filepath of each link (passed as an argument)."
 				   ("org headers (show path)" relative identity "** " " \n")
 				   ("org headers (tree)" relative file-name-nondirectory
 				    (lambda (x) (concat (make-string (length (split-string path "/")) ?*)
-							" "))
-				    " \n"))
+				   			" "))
+				    " \n")
+				   )
   "Named preset arguments for `file-name-as-orglink' used by `dired-copy-orglink-as-kill' and `dired-copy-orglink-to-rectangle'.
 Each sublist takes the form (DESC DIRSYM NAMEFILTER PREFIX SUFFIX); DESC is a description of the preset,
 DIRSYM is either 'relative, 'absolute or nil to indicate if links should be relative to `default-directory'
@@ -378,8 +379,14 @@ The remaining elements are used for arguments of the same name for `file-name-as
 				      (function :tag "Link rename function"
 						:help-echo "Function takes filepath as arg and returns linkname"
 						:value file-name-nondirectory)
-				      (string :tag "Prefix")
-				      (string :tag "Suffix")))
+				      (choice (string :tag "Prefix")
+					      (function :tag "Prefix function"
+							:help-echo
+							"Function that generates a prefix from the filepath"))
+				      (choice (string :tag "Suffix")
+					      (function :tag "Suffix function"
+							:help-echo
+							"Function that generates a prefix from the filepath"))))
   :group 'dired)
 
 (defun dired-copy-orglink-get-args nil
